@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheque Discount Calculator</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .calculator-card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 440px;
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border: 1px solid var(--border-color);
+        }
+
+        .header {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .header h2 {
+            font-size: 1.4rem;
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper span {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px 12px 52px;
+            font-size: 1rem;
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.2s ease;
+            color: var(--text-main);
+            background-color: #fff;
+        }
+
+        .form-group input.no-prefix {
+            padding-left: 14px;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .results-container {
+            margin-top: 24px;
+            background-color: #f1f5f9;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .result-row:not(:last-child) {
+            border-bottom: 1px dashed #cbd5e1;
+        }
+
+        .result-label {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        .result-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .result-row.highlight .result-value {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .rate-info {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calculator-card">
+    <div class="header">
+        <h2>Cheque Discount Calculator</h2>
+        <p>ලක්ෂයකට දිනකට රු. 130 අනුපාතය අනුව</p>
+    </div>
+
+    <div class="form-group">
+        <label for="chequeAmount">චෙක්පතේ වටිනාකම (LKR)</label>
+        <div class="input-wrapper">
+            <span>Rs.</span>
+            <input type="number" id="chequeAmount" placeholder="100000" oninput="calculateDiscount()">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="days">මාරුවීමට ඇති දින ගණන (Days)</label>
+        <div class="input-wrapper">
+            <input type="number" id="days" class="no-prefix" placeholder="14" oninput="calculateDiscount()">
+        </div>
+    </div>
+
+    <div class="results-container">
+        <div class="result-row">
+            <span class="result-label">මුළු කොමිස් මුදල:</span>
+            <span class="result-value" id="commissionVal">Rs. 0.00</span>
+        </div>
+        <div class="result-row highlight">
+            <span class="result-label">අතට ලැබෙන මුදල:</span>
+            <span class="result-value" id="netPayVal">Rs. 0.00</span>
+        </div>
+    </div>
+
+    <div class="rate-info">
+        Rate: LKR 130 Per LKR 100,000 per Day
+    </div>
+</div>
+
+<script>
+    function calculateDiscount() {
+        const amount = parseFloat(document.getElementById('chequeAmount').value) || 0;
+        const days = parseFloat(document.getElementById('days').value) || 0;
+
+        // Formula: (Amount / 100,000) * 130 * Days
+        const commission = (amount / 100000) * 130 * days;
+        const netPayment = amount - commission;
+
+        document.getElementById('commissionVal').innerText = 'Rs. ' + commission.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('netPayVal').innerText = 'Rs. ' + (netPayment > 0 ? netPayment : 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+</script>
+
+</body>
+</html>
