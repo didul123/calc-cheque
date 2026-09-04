@@ -2,7 +2,7 @@
 <html lang="si">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cheque Discount Calculator</title>
     <style>
         :root {
@@ -19,7 +19,8 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -29,26 +30,26 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 16px;
         }
 
         .calculator-card {
             background: var(--card-bg);
             width: 100%;
             max-width: 440px;
-            padding: 28px;
+            padding: 24px;
             border-radius: 16px;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
             border: 1px solid var(--border-color);
         }
 
         .header {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             text-align: center;
         }
 
         .header h2 {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             color: var(--text-main);
             font-weight: 700;
         }
@@ -60,7 +61,7 @@
         }
 
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
 
         .form-group label {
@@ -73,6 +74,7 @@
 
         .input-wrapper {
             position: relative;
+            width: 100%;
         }
 
         .input-wrapper span {
@@ -83,30 +85,56 @@
             color: var(--text-muted);
             font-weight: 600;
             font-size: 0.95rem;
+            pointer-events: none;
+            z-index: 2;
         }
 
         .form-group input {
             width: 100%;
+            height: 48px;
             padding: 12px 14px 12px 52px;
             font-size: 1rem;
             border: 1.5px solid var(--border-color);
             border-radius: 10px;
             outline: none;
-            transition: border-color 0.2s ease;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
             color: var(--text-main);
             background-color: #fff;
+            -webkit-appearance: none;
+            appearance: none;
         }
 
         .form-group input.no-prefix {
             padding-left: 14px;
+            padding-right: 14px;
+        }
+
+        /* iOS Safari Specific Fixes for Date Input */
+        input[type="date"] {
+            min-height: 48px;
+            background-color: #ffffff !important;
+            color: var(--text-main) !important;
+            display: block;
+            -webkit-min-logical-width: calc(100% - 28px);
+        }
+
+        /* Displays date text properly in iOS when empty */
+        input[type="date"]:invalid {
+            color: var(--text-muted) !important;
+        }
+
+        ::-webkit-date-and-time-value {
+            text-align: left;
+            min-height: 1.2em;
         }
 
         .form-group input:focus {
             border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
         .results-container {
-            margin-top: 24px;
+            margin-top: 20px;
             background-color: #f1f5f9;
             border-radius: 12px;
             padding: 16px;
@@ -117,7 +145,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
+            padding: 10px 0;
+            gap: 8px;
         }
 
         .result-row:not(:last-child) {
@@ -133,6 +162,8 @@
             font-size: 1rem;
             font-weight: 700;
             color: var(--text-main);
+            text-align: right;
+            word-break: break-all;
         }
 
         .result-row.highlight .result-value {
@@ -145,6 +176,23 @@
             color: var(--text-muted);
             text-align: center;
             margin-top: 16px;
+        }
+
+        @media (max-width: 360px) {
+            .calculator-card {
+                padding: 18px 14px;
+            }
+            .header h2 {
+                font-size: 1.15rem;
+            }
+            .result-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 2px;
+            }
+            .result-value {
+                text-align: left;
+            }
         }
     </style>
 </head>
@@ -160,14 +208,14 @@
         <label for="chequeAmount">චෙක්පතේ වටිනාකම (LKR)</label>
         <div class="input-wrapper">
             <span>Rs.</span>
-            <input type="number" id="chequeAmount" placeholder="100000" oninput="calculateDiscount()">
+            <input type="number" id="chequeAmount" inputmode="decimal" placeholder="100000" oninput="calculateDiscount()">
         </div>
     </div>
 
     <div class="form-group">
         <label for="chequeDate">චෙක්පත මාරු වීමට ඇති දිනය (Cheque Date)</label>
         <div class="input-wrapper">
-            <input type="date" id="chequeDate" class="no-prefix" onchange="calculateDiscount()">
+            <input type="date" id="chequeDate" class="no-prefix" onchange="calculateDiscount()" required>
         </div>
     </div>
 
@@ -215,10 +263,8 @@
             days = diffDays > 0 ? diffDays : 0;
         }
 
-        // Display calculated days
         document.getElementById('daysVal').innerText = days + ' Days';
 
-        // Formula: (Amount / 100,000) * 130 * Days
         const commission = (amount / 100000) * 130 * days;
         const netPayment = amount - commission;
 
