@@ -77,7 +77,7 @@
             width: 100%;
         }
 
-        .input-wrapper span {
+        .input-wrapper span.currency {
             position: absolute;
             left: 14px;
             top: 50%;
@@ -104,28 +104,30 @@
             appearance: none;
         }
 
-        .form-group input.no-prefix {
-            padding-left: 14px;
-            padding-right: 14px;
-        }
-
-        /* iOS Safari Specific Fixes for Date Input */
+        /* Custom Calendar Icon using CSS Background Image */
         input[type="date"] {
-            min-height: 48px;
-            background-color: #ffffff !important;
-            color: var(--text-main) !important;
-            display: block;
-            -webkit-min-logical-width: calc(100% - 28px);
+            padding-left: 14px;
+            padding-right: 42px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 20px 20px;
         }
 
-        /* Displays date text properly in iOS when empty */
-        input[type="date"]:invalid {
-            color: var(--text-muted) !important;
-        }
-
+        /* iOS Safari Specific Display Fixes */
         ::-webkit-date-and-time-value {
             text-align: left;
             min-height: 1.2em;
+        }
+
+        ::-webkit-calendar-picker-indicator {
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: pointer;
         }
 
         .form-group input:focus {
@@ -207,7 +209,7 @@
     <div class="form-group">
         <label for="chequeAmount">චෙක්පතේ වටිනාකම (LKR)</label>
         <div class="input-wrapper">
-            <span>Rs.</span>
+            <span class="currency">Rs.</span>
             <input type="number" id="chequeAmount" inputmode="decimal" placeholder="100000" oninput="calculateDiscount()">
         </div>
     </div>
@@ -215,7 +217,7 @@
     <div class="form-group">
         <label for="chequeDate">චෙක්පත මාරු වීමට ඇති දිනය (Cheque Date)</label>
         <div class="input-wrapper">
-            <input type="date" id="chequeDate" class="no-prefix" onchange="calculateDiscount()" required>
+            <input type="date" id="chequeDate" onchange="calculateDiscount()" required>
         </div>
     </div>
 
