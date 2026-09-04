@@ -165,20 +165,17 @@
     </div>
 
     <div class="form-group">
-        <label for="chequeDate">චෙක්පතේ දිනය (Cheque Date)</label>
+        <label for="chequeDate">චෙක්පත මාරු වීමට ඇති දිනය (Cheque Date)</label>
         <div class="input-wrapper">
-            <input type="date" id="chequeDate" class="no-prefix" onchange="calculateDaysFromDate()">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label for="days">මාරුවීමට ඇති දින ගණන (Days)</label>
-        <div class="input-wrapper">
-            <input type="number" id="days" class="no-prefix" placeholder="0" oninput="calculateDiscount()">
+            <input type="date" id="chequeDate" class="no-prefix" onchange="calculateDiscount()">
         </div>
     </div>
 
     <div class="results-container">
+        <div class="result-row">
+            <span class="result-label">මාරුවීමට ඇති දින ගණන:</span>
+            <span class="result-value" id="daysVal">0 Days</span>
+        </div>
         <div class="result-row">
             <span class="result-label">මුළු කොමිස් මුදල:</span>
             <span class="result-value" id="commissionVal">Rs. 0.00</span>
@@ -195,33 +192,31 @@
 </div>
 
 <script>
-    // Set minimum date to today
     window.onload = function() {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('chequeDate').min = today;
     };
 
-    function calculateDaysFromDate() {
-        const dateInput = document.getElementById('chequeDate').value;
-        if (!dateInput) return;
-
-        const chequeDate = new Date(dateInput);
-        const today = new Date();
-        
-        // Reset time component for accurate day calculation
-        today.setHours(0, 0, 0, 0);
-        chequeDate.setHours(0, 0, 0, 0);
-
-        const diffTime = chequeDate - today;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-        document.getElementById('days').value = diffDays > 0 ? diffDays : 0;
-        calculateDiscount();
-    }
-
     function calculateDiscount() {
         const amount = parseFloat(document.getElementById('chequeAmount').value) || 0;
-        const days = parseFloat(document.getElementById('days').value) || 0;
+        const dateInput = document.getElementById('chequeDate').value;
+        
+        let days = 0;
+
+        if (dateInput) {
+            const chequeDate = new Date(dateInput);
+            const today = new Date();
+            
+            today.setHours(0, 0, 0, 0);
+            chequeDate.setHours(0, 0, 0, 0);
+
+            const diffTime = chequeDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            days = diffDays > 0 ? diffDays : 0;
+        }
+
+        // Display calculated days
+        document.getElementById('daysVal').innerText = days + ' Days';
 
         // Formula: (Amount / 100,000) * 130 * Days
         const commission = (amount / 100000) * 130 * days;
