@@ -109,6 +109,10 @@
             appearance: none;
         }
 
+        .form-group input.no-symbol {
+            padding-left: 14px;
+        }
+
         input[type="date"] {
             padding-left: 14px;
             padding-right: 42px;
@@ -206,7 +210,7 @@
 <div class="calculator-card">
     <div class="header">
         <h2>Cheque Discount Calculator</h2>
-        <p>ලක්ෂයකට දිනකට රු. 135 අනුපාතය අනුව</p>
+        <p>ලක්ෂයකට දිනකට අනුපාතය අනුව ගණනය කිරීම</p>
     </div>
 
     <div class="form-group">
@@ -221,6 +225,14 @@
         <label for="chequeDate">චෙක්පත මාරු වීමට ඇති දිනය (Cheque Date)</label>
         <div class="input-wrapper">
             <input type="date" id="chequeDate" onchange="calculateDiscount()" required>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="discountRate">දිනකට ලක්ෂයකට අනුපාතය (LKR)</label>
+        <div class="input-wrapper">
+            <span class="currency">Rs.</span>
+            <input type="number" id="discountRate" inputmode="decimal" value="135" oninput="calculateDiscount()">
         </div>
     </div>
 
@@ -239,7 +251,7 @@
         </div>
     </div>
 
-    <div class="rate-info">
+    <div class="rate-info" id="rateInfoText">
         Rate: LKR 135 Per LKR 100,000 per Day
     </div>
 </div>
@@ -253,6 +265,7 @@
     function calculateDiscount() {
         const amount = parseFloat(document.getElementById('chequeAmount').value) || 0;
         const dateInput = document.getElementById('chequeDate').value;
+        const rate = parseFloat(document.getElementById('discountRate').value) || 0;
         
         let days = 0;
 
@@ -269,8 +282,9 @@
         }
 
         document.getElementById('daysVal').innerText = days + ' Days';
+        document.getElementById('rateInfoText').innerText = 'Rate: LKR ' + rate + ' Per LKR 100,000 per Day';
 
-        const commission = (amount / 100000) * 135 * days;
+        const commission = (amount / 100000) * rate * days;
         const netPayment = amount - commission;
 
         document.getElementById('commissionVal').innerText = 'Rs. ' + commission.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
